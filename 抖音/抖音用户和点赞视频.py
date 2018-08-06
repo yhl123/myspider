@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
+
+#需要用到抖音js文件
+
 import re
 import requests
 
-url = 'https://www.douyin.com/share/user/6556303280/?share_type=link'  # 75097696932/96488770253/6556303280/67561351000
+url = 'https://www.douyin.com/share/user/6556303280/?share_type=link'  
+# 75097696932/96488770253/6556303280/67561351000（作者ID）
 
 # ###################### 1. 根据url获取用户ID #########################
 user_id = re.findall('share/user/(.*)/\?', url)[0]
