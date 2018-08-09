@@ -10,10 +10,11 @@ from bs4 import BeautifulSoup
 from multiprocessing import cpu_count
 from concurrent.futures import ThreadPoolExecutor
 
-m = pymongo.MongoClient('127.0.0.1:27017')
+m = pymongo.MongoClient('localhost:27017')
 db = m['mytoy']
 collection  = db.test
-pool = redis.ConnectionPool(host='127.0.0.1',port=6379)
+pool = redis.ConnectionPool(host='localhost',port=6379)
+# pool = redis.ConnectionPool(host='localhost',port=6379,password=xxx)#密码
 r = redis.Redis(connection_pool=pool)
 
 url_type = "https://m.ximalaya.com/tracks/%s.json"
@@ -23,7 +24,8 @@ HEADERS = {
                   '(KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
     'Host': "www.ximalaya.com"
 }
-PATH = r'D:/audios/'#下载路径
+# PATH = r'D:/audios/'#下载路径
+PATH = r'/xxx/xxx/xxx/audio/'#下载路径
 # URL_SET = set({})#去重使用，可以用Redis替换
 
 
@@ -42,17 +44,13 @@ def get_xmly(url_name, url):
         msg = s.get(url=url_type % uid)
         res = json.loads(msg.text)
         if res.get('res') == None:
-            print(res)
             get_audio(res, url_name)
         time.sleep(2)
 
 
 def get_audio(res, url_name):
     id = res.get('id')
-    if id in r.smembers('xmly_url_id'):
-        pass
-    else:
-        r.sadd('xmly_url_id', id)
+    if r.sadd('xmly_url_id', id):
         if  url_name=='ertongwenxue':
             audio_type = '文学'
         elif  url_name=='kepubaike':
@@ -75,6 +73,7 @@ def get_audio(res, url_name):
         intro = res.get('intro')
         filename = (title + '.' + play_path_64.rsplit('.', maxsplit=1)[-1]).replace(' ', '')
         filepath = PATH + url_name + '/' + filename
+        print('filepath:',filepath)
         collection.insert_one({'avatar_name':cover_url_142,'audio_name':filename,
                                'audio_type':audio_type,'play_cont':play_cont,
                                'title':title,'nickname':nickname,'intro':intro})
