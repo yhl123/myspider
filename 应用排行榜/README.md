@@ -1,0 +1,1 @@
+通过bin下的start启动，settings配置mysql数据库
